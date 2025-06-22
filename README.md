@@ -4,7 +4,7 @@
 
 [![PyPI version](https://badge.fury.io/py/reconcile-ai.svg)](https://badge.fury.io/py/reconcile-ai)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Tests](https://github.com/kailashchanel/reconcile-ai/workflows/CI/badge.svg)](https://github.com/kailashchanel/reconcile-ai/actions)
 
 **AI-powered headless merge conflict resolver for Git repositories**
@@ -517,7 +517,7 @@ A: Yes! Use the `custom_prompt` field in `reconcile.yaml` for file-type specific
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
