@@ -9,7 +9,7 @@ description = "AI-powered headless merge conflict resolver"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "Kailash Elumalai", email = "ckailash@stanford.edu"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -41,9 +41,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/reconcile"
-Repository = "https://github.com/yourusername/reconcile"
-Issues = "https://github.com/yourusername/reconcile/issues"
+Homepage = "https://github.com/kailashchanel/reconcile-ai"
+Repository = "https://github.com/kailashchanel/reconcile-ai"
+Issues = "https://github.com/kailashchanel/reconcile-ai/issues"
 
 [project.scripts]
 reconcile = "reconcile:main"
