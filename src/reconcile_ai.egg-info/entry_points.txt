@@ -1,0 +1,2 @@
+[console_scripts]
+reconcile = reconcile:main

@@ -1,0 +1,11 @@
+GitPython>=3.1.0
+openai>=1.0.0
+
+[dev]
+pytest>=6.0
+black
+flake8
+mypy
+
+[yaml]
+PyYAML>=6.0

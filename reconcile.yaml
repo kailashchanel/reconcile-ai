@@ -1,0 +1,92 @@
+# Reconcile Configuration File
+# Place this file in your Git repository root to customize behavior
+
+# OpenAI model to use for conflict resolution
+# Options: gpt-4, gpt-4-turbo, gpt-3.5-turbo, code-llama (if available)
+model: gpt-4
+
+# Maximum number of conflicts to send to AI in a single batch
+# Higher values = fewer API calls but larger prompts
+# Recommended: 3-7 for complex conflicts, 5-10 for simple ones
+max_batch_size: 5
+
+# Branch preference for conflict resolution
+# When conflicts arise, AI will slightly favor this branch's changes
+# Options: main, master, develop, feature, or null for no preference
+branch_preference: main
+
+# Temperature for AI responses (0.0 = deterministic, 1.0 = creative)
+# Lower values recommended for code to ensure consistency
+temperature: 0
+
+# Timeout for API calls in seconds
+timeout: 30
+
+# Whether to preserve original whitespace and formatting
+preserve_whitespace: true
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: INFO
+  
+  # Enable JSON structured logging
+  json_format: false
+  
+  # Log file location (relative to repo root)
+  file: .reconcile/reconcile.log
+
+# Custom prompts (advanced users only)
+prompts:
+  # System prompt for single conflicts
+  single_conflict: |
+    You are an expert software engineer resolving Git merge conflicts.
+    Analyze both sides of the conflict and create the best possible merge
+    that preserves functionality from both branches.
+  
+  # System prompt for batch conflicts  
+  batch_conflict: |
+    You are an expert software engineer resolving multiple Git merge conflicts.
+    For each numbered conflict, provide a clean resolution that intelligently
+    combines functionality from both branches.
+
+# File type specific settings
+file_types:
+  # Python files
+  "*.py":
+    model: gpt-4  # Use more capable model for Python
+    temperature: 0
+    
+  # JavaScript/TypeScript files  
+  "*.js,*.ts":
+    model: gpt-4
+    temperature: 0.1
+    
+  # Configuration files - be more conservative
+  "*.json,*.yaml,*.yml,*.xml":
+    model: gpt-3.5-turbo
+    temperature: 0
+    branch_preference: main  # Favor main branch for config
+    
+  # Documentation files - allow more creativity
+  "*.md,*.rst,*.txt":
+    model: gpt-3.5-turbo
+    temperature: 0.3
+
+# Hooks configuration
+hooks:
+  # Run reconcile automatically after merge attempts
+  post_merge: true
+  
+  # Validate resolved conflicts before commit
+  pre_commit: false
+  
+  # Custom hook commands
+  custom:
+    post_resolve: |
+      # Run after each successful resolution
+      echo "Conflict resolved: $RECONCILE_FILE"
+      
+    pre_batch: |
+      # Run before processing each batch
+      echo "Processing batch of $RECONCILE_BATCH_SIZE conflicts" 

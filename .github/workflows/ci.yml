@@ -1,0 +1,209 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PYTHON_VERSION: "3.10"
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Create virtual environment
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
+        echo "$(pwd)/venv/bin" >> $GITHUB_PATH
+        
+    - name: Upgrade pip and install build tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install build wheel setuptools
+        
+    - name: Install dependencies
+      run: |
+        pip install -e .
+        pip install pytest flake8 black
+        
+    - name: Lint with flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 src/reconcile --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Treat all errors as warnings. GitHub editor is 127 chars wide
+        flake8 src/reconcile --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+    - name: Check code formatting with black
+      run: |
+        black --check --diff src/reconcile tests/
+        
+    - name: Run tests with pytest
+      env:
+        OPENAI_API_KEY: "test-api-key"
+        PYTHONPATH: ${{ github.workspace }}/src
+      run: |
+        pytest tests/ -v --tb=short
+        
+    - name: Test console script installation
+      run: |
+        # Verify the reconcile command is available
+        reconcile --help
+        reconcile run --help
+        reconcile install --help
+
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort mypy
+        
+    - name: Run flake8
+      run: |
+        flake8 src/reconcile tests/ --max-line-length=127 --extend-ignore=E203,W503
+        
+    - name: Check import sorting with isort
+      run: |
+        isort --check-only --diff src/reconcile tests/
+        
+    - name: Check type hints with mypy
+      run: |
+        mypy src/reconcile --ignore-missing-imports --no-strict-optional
+      continue-on-error: true  # MyPy can be strict, make it non-blocking
+
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install build wheel
+        
+    - name: Build package
+      run: python -m build
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist-packages
+        path: dist/
+        retention-days: 7
+
+  publish:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs: [test, lint, build]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: pypi
+      url: https://pypi.org/p/reconcile-ai
+    permissions:
+      id-token: write  # Required for trusted publishing
+      
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: dist-packages
+        path: dist/
+        
+    - name: Verify tag version matches package version
+      run: |
+        # Extract version from tag (remove 'v' prefix)
+        TAG_VERSION=${GITHUB_REF#refs/tags/v}
+        echo "Tag version: $TAG_VERSION"
+        
+        # Check if any wheel file contains the tag version
+        if ls dist/*${TAG_VERSION}*.whl 1> /dev/null 2>&1; then
+          echo "✅ Version match confirmed"
+        else
+          echo "❌ Tag version $TAG_VERSION does not match package version"
+          echo "Available files:"
+          ls -la dist/
+          exit 1
+        fi
+        
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        # Uses trusted publishing - no API token needed
+        # Configure at https://pypi.org/manage/project/reconcile-ai/settings/publishing/
+        verbose: true
+        print-hash: true
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety bandit
+        
+    - name: Check dependencies for known vulnerabilities
+      run: |
+        pip install -e .
+        safety check
+        
+    - name: Run bandit security linter
+      run: |
+        bandit -r src/reconcile -f json -o bandit-report.json
+      continue-on-error: true
+      
+    - name: Upload security report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-report
+        path: bandit-report.json
+        retention-days: 30 
