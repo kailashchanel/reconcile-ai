@@ -200,7 +200,7 @@ def parse_conflicts(conflict_blobs, repo_path="."):
             with open(full_path, 'r') as f:
                 content = f.read()
             sections = re.findall(
-                r"(<<<<<<< HEAD.*?=======.*?>>>>>>> .*)",
+                r"(<<<<<<< HEAD.*?=======.*?>>>>>>> [^\n]*)",
                 content,
                 flags=re.DOTALL
             )
