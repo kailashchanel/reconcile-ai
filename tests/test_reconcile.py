@@ -470,21 +470,25 @@ class TestGitHookInstallation:
         """Test that the install subcommand works correctly."""
         os.chdir(self.repo_path)
         
-        # Test using subprocess to call the install command
-        script_path = os.path.abspath(os.path.join(os.path.dirname(reconcile.__file__), '..', '..', 'src', 'reconcile', '__init__.py'))
+        # Test using subprocess to call the install command with proper environment
+        env = os.environ.copy()
+        env['OPENAI_API_KEY'] = 'test-api-key'  # Set dummy key for subprocess
         
         # Run the install command
         try:
             result = subprocess.run([
                 'python', '-m', 'reconcile', 'install', '--hook', 'post-merge'
-            ], capture_output=True, text=True, timeout=10)
+            ], capture_output=True, text=True, timeout=10, env=env)
             
             # Check if hook was installed
             hook_path = os.path.join(self.repo_path, '.git', 'hooks', 'post-merge')
             
-            # Note: The actual installation might fail due to import issues in subprocess,
-            # but we can at least verify the command runs without syntax errors
-            assert result.returncode in [0, 1], "Install command should run without syntax errors"
+            # The command should succeed since install doesn't require OpenAI
+            if result.returncode == 0:
+                assert os.path.exists(hook_path), "Hook should be installed"
+            else:
+                # If it fails, at least check it's not a syntax error
+                assert 'SyntaxError' not in result.stderr, f"Should not have syntax errors: {result.stderr}"
             
         except subprocess.TimeoutExpired:
             pytest.skip("Install command test skipped due to timeout")

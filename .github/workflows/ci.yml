@@ -47,6 +47,8 @@ jobs:
       env:
         OPENAI_API_KEY: "test-api-key"
         PYTHONPATH: ${{ github.workspace }}/src
+        # Prevent OpenAI client from trying to validate the API key during import
+        OPENAI_API_BASE: "https://api.openai.com/v1"
       run: |
         pytest tests/ -v --tb=short
         

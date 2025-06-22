@@ -5,7 +5,7 @@
 [![PyPI version](https://badge.fury.io/py/reconcile-ai.svg)](https://badge.fury.io/py/reconcile-ai)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://github.com/yourusername/reconcile-ai/workflows/CI/badge.svg)](https://github.com/yourusername/reconcile-ai/actions)
+[![Tests](https://github.com/kailashchanel/reconcile-ai/workflows/CI/badge.svg)](https://github.com/kailashchanel/reconcile-ai/actions)
 
 **AI-powered headless merge conflict resolver for Git repositories**
 
@@ -532,9 +532,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Documentation**: [Full Documentation](https://github.com/yourusername/reconcile-ai/wiki)
-- **Issues**: [Bug Reports & Feature Requests](https://github.com/yourusername/reconcile-ai/issues)
-- **Discussions**: [Community Discussion](https://github.com/yourusername/reconcile-ai/discussions)
+- **Documentation**: [Full Documentation](https://github.com/kailashchanel/reconcile-ai/wiki)
+- **Issues**: [Bug Reports & Feature Requests](https://github.com/kailashchanel/reconcile-ai/issues)
+- **Discussions**: [Community Discussion](https://github.com/kailashchanel/reconcile-ai/discussions)
 - **PyPI Package**: [reconcile-ai](https://pypi.org/project/reconcile-ai/)
 
 ---
@@ -543,6 +543,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ for developers who hate merge conflicts**
 
-[⭐ Star this project](https://github.com/yourusername/reconcile-ai) | [🐛 Report Issues](https://github.com/yourusername/reconcile-ai/issues) | [💬 Join Discussion](https://github.com/yourusername/reconcile-ai/discussions)
+[⭐ Star this project](https://github.com/kailashchanel/reconcile-ai) | [🐛 Report Issues](https://github.com/kailashchanel/reconcile-ai/issues) | [💬 Join Discussion](https://github.com/kailashchanel/reconcile-ai/discussions)
 
 </div> 
