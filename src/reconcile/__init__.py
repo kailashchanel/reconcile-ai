@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Copyright 2025 Kailash Elumalai
+# Licensed under the Apache License, Version 2.0:
+#   http://www.apache.org/licenses/LICENSE-2.0
+
 """
 Reconcile: AI-powered headless merge conflict resolver.
 
